@@ -254,7 +254,7 @@ async def run_server(
     server=server,
     page_load_timeout=page_load_timeout,
     browser_position=browser_position,
-    browser="chromium",
+    browser="chrome",
     headless=True,
     browser_executable_path="/root/.cache/ms-playwright/chromium-1169/chrome-linux/chrome",
     # browser_executable_path="/opt/google/chrome/chrome",
@@ -388,4 +388,5 @@ def main_cli():
 
 
 if __name__ == '__main__':
-  asyncio.run(main())
+  print("Hola")
+  # asyncio.run(main())
