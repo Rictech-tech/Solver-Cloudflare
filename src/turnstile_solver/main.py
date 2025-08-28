@@ -254,7 +254,7 @@ async def run_server(
     server=server,
     page_load_timeout=page_load_timeout,
     browser_position=browser_position,
-    browser="chrome",
+    browser="chromium",
     headless=True,
     browser_executable_path="/root/.cache/ms-playwright/chromium-1169/chrome-linux/chrome",
     # browser_executable_path="/opt/google/chrome/chrome",
