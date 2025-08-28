@@ -307,6 +307,7 @@ class TurnstileSolver:
       args=self.browser_args,
       headless=self.headless,
       proxy=proxy.dict() if proxy else None,
+      timeout=60000
     )
     return browser, playwright
 
