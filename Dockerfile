@@ -1,4 +1,4 @@
-# Usa la imagen base
+# Base Python
 FROM python:3.11-slim
 
 # Variables de entorno
@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     SOLVER_SERVER_PORT=8088 \
     SOLVER_SECRET=jWRN7DH6
 
-# Instalar dependencias del sistema
+# Dependencias del sistema
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git curl wget unzip locales \
     libnss3 libxss1 libasound2 fonts-liberation \
@@ -21,16 +21,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Configurar locale
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen en_US.UTF-8
 
-# Establecer directorio de trabajo
+# Directorio de trabajo
 WORKDIR /app
 
-# Copiar requirements.txt si lo tienes
+# Copiar requirements si existen
 COPY requirements.txt .
 
 # Instalar requirements
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Instalar el solver directamente desde el repo
+# Instalar solver desde repo
 RUN pip install --no-cache-dir "git+https://github.com/odell0111/turnstile_solver.git@main"
 
 # Instalar patchright + Chrome
@@ -40,13 +40,11 @@ RUN pip install --no-cache-dir patchright \
 # Exponer puerto
 EXPOSE ${SOLVER_SERVER_PORT}
 
-# Comando por defecto para iniciar el solver
-CMD ["sh", "-c", "\
-    echo '🚀 Iniciando solver en puerto ${SOLVER_SERVER_PORT}' && \
-    exec solver --browser ${SOLVER_BROWSER:-chrome} \
-                 --port ${SOLVER_SERVER_PORT:-8088} \
-                 --secret ${SOLVER_SECRET:-jWRN7DH6} \
-                 --max-attempts 3 \
-                 --captcha-timeout 30 \
-                 --page-load-timeout 30 \
-"]
+# Ejecutar solver con logging mínimo
+ENTRYPOINT ["solver"]
+CMD ["--browser", "chrome", \
+     "--port", "8088", \
+     "--secret", "jWRN7DH6", \
+     "--max-attempts", "3", \
+     "--captcha-timeout", "30", \
+     "--page-load-timeout", "30"]
