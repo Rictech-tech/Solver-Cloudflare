@@ -44,4 +44,4 @@ EXPOSE ${SOLVER_SERVER_PORT}
 ENTRYPOINT ["solver"]
 
 # CMD en una sola línea
-CMD ["--browser", "chrome", "--port", "8088", "--secret", "jWRN7DH6", "--max-attempts", "3", "--captcha-timeout", "30", "--page-load-timeout", "30", "--reload-on-overrun", "--chrome-args=--disable-logging --log-level=3 --no-sandbox --disable-dev-shm-usage"]
+# CMD ["--browser", "chrome", "--port", "8088", "--secret", "jWRN7DH6", "--max-attempts", "3", "--captcha-timeout", "30", "--page-load-timeout", "30", "--reload-on-overrun", "--chrome-args=--disable-logging --log-level=3 --no-sandbox --disable-dev-shm-usage"]
