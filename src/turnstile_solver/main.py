@@ -250,23 +250,17 @@ async def run_server(
     ignore_food_events=ignore_food_events,
   )
 
-  proxy = Proxy(
-    server="http://brd.superproxy.io:33335",
-    username="brd-customer-hl_8131b760-zone-residential_proxy2",
-    password="srzvl9aab7nj"
-  )
-
   solver = TurnstileSolver(
     server=server,
     page_load_timeout=page_load_timeout,
     browser_position=browser_position,
-    browser="chrome",
-    headless=False,
+    # browser="chrome",
+    # headless=False,
     # browser_executable_path="/root/.cache/ms-playwright/chromium-1169/chrome-linux/chrome",
-    browser_executable_path="/opt/google/chrome/chrome",
-    # browser_executable_path=browser_executable_path,
-    # headless=headless,
-    # browser=browser,
+    # browser_executable_path="/opt/google/chrome/chrome",
+    browser_executable_path=browser_executable_path,
+    headless=headless,
+    browser=browser,
     reload_page_on_captcha_overrun_event=reload_page_on_captcha_overrun_event,
     max_attempts=max_attempts,
     attempt_timeout=attempt_timeout,
