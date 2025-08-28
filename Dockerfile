@@ -3,6 +3,8 @@ FROM python:3.11-slim
 
 # Evitar prompts interactivos
 ENV DEBIAN_FRONTEND=noninteractive
+ENV LOG_LEVEL=WARNING
+ENV PYTHONUNBUFFERED=1
 
 # Actualiza e instala dependencias necesarias
 RUN apt-get update && apt-get install -y \
@@ -19,11 +21,15 @@ RUN pip install --no-cache-dir git+https://github.com/odell0111/turnstile_solver
 RUN pip install --no-cache-dir patchright \
     && patchright install chrome
 
-# Crear un directorio de trabajo
+# Crear directorios de trabajo y logs
 WORKDIR /app
+RUN mkdir -p /app/logs
 
 # Exponer el puerto que usa el solver
 EXPOSE 8088
 
-# Comando por defecto para arrancar el solver
-CMD ["solver", "--port", "8088", "--secret", "jWRN7DH6", "--browser-position", "--max-attempts", "3", "--captcha-timeout", "30", "--page-load-timeout", "30", "--reload-on-overrun"]
+# Comando por defecto: solver con logs en archivo
+CMD solver --port 8088 --secret jWRN7DH6 \
+    --browser-position --max-attempts 3 \
+    --captcha-timeout 30 --page-load-timeout 30 \
+    --reload-on-overrun >> /app/logs/solver.log 2>&1
