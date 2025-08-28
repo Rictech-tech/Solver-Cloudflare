@@ -41,5 +41,6 @@ RUN pip install --no-cache-dir patchright \
 EXPOSE ${SOLVER_SERVER_PORT}
 
 # ENTRYPOINT y CMD en formato JSON correcto
-ENTRYPOINT ["solver"]
-CMD ["--browser","chrome","--port","8088","--secret","jWRN7DH6","--max-attempts","3","--captcha-timeout","30","--page-load-timeout","30"]
+# ENTRYPOINT ["solver"]
+# CMD ["--browser","chrome","--port","8088","--secret","jWRN7DH6","--max-attempts","3","--captcha-timeout","30","--page-load-timeout","30"]
+CMD [ "solver" ]
