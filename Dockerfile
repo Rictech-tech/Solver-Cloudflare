@@ -1,6 +1,7 @@
 # Base Python
 FROM python:3.11-slim
 
+# Variables de entorno
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8 \
@@ -8,6 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     SOLVER_SERVER_PORT=8088 \
     SOLVER_SECRET=jWRN7DH6
 
+# Dependencias del sistema
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git curl wget unzip locales \
     libnss3 libxss1 libasound2 fonts-liberation \
@@ -16,25 +18,28 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxcomposite1 libxrandr2 libxi6 \
     && rm -rf /var/lib/apt/lists/*
 
+# Configurar locale
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen en_US.UTF-8
 
+# Directorio de trabajo
 WORKDIR /app
 
+# Copiar requirements si existen
 COPY requirements.txt .
+
+# Instalar requirements
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Instalar solver desde repo
 RUN pip install --no-cache-dir "git+https://github.com/odell0111/turnstile_solver.git@main"
-RUN pip install --no-cache-dir patchright && patchright install chrome
 
+# Instalar patchright + Chrome
+RUN pip install --no-cache-dir patchright \
+    && patchright install chrome
+
+# Exponer puerto
 EXPOSE ${SOLVER_SERVER_PORT}
 
-# ENTRYPOINT directo, sin sh -c
+# ENTRYPOINT y CMD en formato JSON correcto
 ENTRYPOINT ["solver"]
-
-# CMD con variables de entorno ya definidas
-CMD ["--browser", "chrome",
-     "--port", "8088",
-     "--secret", "jWRN7DH6",
-     "--max-attempts", "3",
-     "--captcha-timeout", "30",
-     "--page-load-timeout", "30"]
+CMD ["--browser","chrome","--port","8088","--secret","jWRN7DH6","--max-attempts","3","--captcha-timeout","30","--page-load-timeout","30"]
