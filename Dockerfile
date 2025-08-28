@@ -1,35 +1,57 @@
-# Imagen base con Python
-FROM python:3.11-slim
+ARG BASE_IMAGE=ubuntu:latest
+FROM --platform=$BUILDPLATFORM ${BASE_IMAGE} AS builder
 
-# Evitar prompts interactivos
-ENV DEBIAN_FRONTEND=noninteractive
-ENV LOG_LEVEL=WARNING
-ENV PYTHONUNBUFFERED=1
+# Multi-stage build setup
+FROM --platform=$TARGETPLATFORM ${BASE_IMAGE}
 
-# Actualiza e instala dependencias necesarias
-RUN apt-get update && apt-get install -y \
-    git curl wget unzip \
-    libnss3 libxss1 libasound2 fonts-liberation libatk1.0-0 \
-    libatk-bridge2.0-0 libcups2 libdrm2 libgbm1 libgtk-3-0 \
-    libxcomposite1 libxrandr2 libxi6 \
-    && rm -rf /var/lib/apt/lists/*
+# Copy architecture-specific binaries
+COPY --from=builder /build-output /app
 
-# Instalar turnstile_solver desde GitHub
-RUN pip install --no-cache-dir git+https://github.com/odell0111/turnstile_solver@main
+# Configure locale and timezone
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install --no-install-recommends -y tzdata locales
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment
+RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+RUN echo "LANG=en_US.UTF-8" > /etc/locale.conf
+RUN locale-gen en_US.UTF-8
 
-# Instalar patchright (para el navegador parcheado)
-RUN pip install --no-cache-dir patchright \
-    && patchright install chrome
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    git \
+    python3-pip \
+    xorgxrdp \
+    xrdp \
+    tightvncserver \
+    xfonts-75dpi  \
+    xfonts-100dpi  \
+    xfonts-base \
+    xvfb \
+    wget \
+    screen \
+    sudo \
+    xfce4 \
+    xfce4-goodies \
+    dbus-x11 \
+    xfce4-terminal
 
-# Crear directorios de trabajo y logs
-WORKDIR /app
-RUN mkdir -p /app/logs
+# Clean up
+RUN apt remove -y light-locker xscreensaver && \
+    apt autoremove -y && \
+    rm -rf /var/cache/apt /var/lib/apt/lists
 
-# Exponer el puerto que usa el solver
-EXPOSE 8088
+# Copy entrypoint script
+COPY ./entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Comando por defecto: solver con logs en archivo
-CMD solver --port 8088 --secret jWRN7DH6 \
-    --browser-position --max-attempts 3 \
-    --captcha-timeout 30 --page-load-timeout 30 \
-    --reload-on-overrun >> /app/logs/solver.log 2>&1
+# Healthcheck (adjust as needed)
+#HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+#    CMD netstat -an | grep $XRDP_PORT >/dev/null || exit 1
+
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
