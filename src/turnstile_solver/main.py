@@ -250,6 +250,12 @@ async def run_server(
     ignore_food_events=ignore_food_events,
   )
 
+  proxy = Proxy(
+    server="http://brd.superproxy.io:33335",
+    username="brd-customer-hl_8131b760-zone-datacenter_proxy1",
+    password="av5q6lqyu8ft"
+  )
+
   solver = TurnstileSolver(
     server=server,
     page_load_timeout=page_load_timeout,
@@ -266,8 +272,7 @@ async def run_server(
     attempt_timeout=attempt_timeout,
     console=console,
     log_level=solver_log_level,
-    # proxy=proxy,
-    proxy="http://brd-customer-hl_8131b760-zone-datacenter_proxy1:av5q6lqyu8ft@brd.superproxy.io:33335",
+    proxy=proxy,
     browser_args=browser_args,
   )
   server.solver = solver
