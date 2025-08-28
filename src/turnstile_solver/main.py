@@ -266,7 +266,8 @@ async def run_server(
     attempt_timeout=attempt_timeout,
     console=console,
     log_level=solver_log_level,
-    proxy=proxy,
+    # proxy=proxy,
+    proxy="http://brd-customer-hl_8131b760-zone-datacenter_proxy1:av5q6lqyu8ft@brd.superproxy.io:33335",
     browser_args=browser_args,
   )
   server.solver = solver
