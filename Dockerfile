@@ -7,9 +7,10 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LC_ALL=en_US.UTF-8 \
     TZ=America/New_York \
     SOLVER_SERVER_PORT=8088 \
-    SOLVER_SECRET=jWRN7DH6
+    SOLVER_SECRET=jWRN7DH6 \
+    SOLVER_BROWSER=chrome
 
-# Dependencias del sistema necesarias para Chrome
+# Dependencias del sistema
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git curl wget unzip locales \
     ca-certificates \
@@ -39,8 +40,8 @@ RUN pip install --no-cache-dir "git+https://github.com/odell0111/turnstile_solve
 # Exponer puerto
 EXPOSE ${SOLVER_SERVER_PORT}
 
-# ENTRYPOINT directo
+# ENTRYPOINT directo al solver
 ENTRYPOINT ["solver"]
 
-# CMD con logs limitados usando log-level (solo info crítica, warnings y errores)
-CMD [ "--browser", "chrome", "--port", "8088", "--secret", "jWRN7DH6", "--max-attempts", "3", "--captcha-timeout", "30", "--page-load-timeout", "30", "--log-level", "WARN"]
+# CMD en una sola línea
+CMD ["--browser", "chrome", "--port", "8088", "--secret", "jWRN7DH6", "--max-attempts", "3", "--captcha-timeout", "30", "--page-load-timeout", "30", "--reload-on-overrun", "--chrome-args=--disable-logging --log-level=3 --no-sandbox --disable-dev-shm-usage"]
