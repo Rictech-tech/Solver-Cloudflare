@@ -1,3 +1,5 @@
 build/
 site-keys.txt
 *.env
+
+/venv
