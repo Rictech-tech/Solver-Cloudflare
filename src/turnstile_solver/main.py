@@ -252,7 +252,7 @@ async def run_server(
 
   proxy = Proxy(
     server="http://brd.superproxy.io:33335",
-    username="brd-customer-hl_8131b760-zone-residential_proxy2222",
+    username="brd-customer-hl_8131b760-zone-residential_proxy22222",
     password="srzvl9aab7nj"
   )
 
