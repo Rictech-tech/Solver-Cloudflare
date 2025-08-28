@@ -250,11 +250,11 @@ async def run_server(
     ignore_food_events=ignore_food_events,
   )
 
-  # proxy = Proxy(
-  #   server="http://brd.superproxy.io:33335",
-  #   username="brd-customer-hl_8131b760-zone-datacenter_proxy1",
-  #   password="av5q6lqyu8ft"
-  # )
+  proxy = Proxy(
+    server="http://brd.superproxy.io:33335",
+    username="brd-customer-hl_8131b760-zone-datacenter_proxy1",
+    password="av5q6lqyu8ft"
+  )
 
   solver = TurnstileSolver(
     server=server,
