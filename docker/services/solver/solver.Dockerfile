@@ -1,57 +1,47 @@
-ARG BASE_IMAGE=ubuntu:latest
-FROM --platform=$BUILDPLATFORM ${BASE_IMAGE} AS builder
+# Imagen base ligera con Python 3.11
+FROM python:3.11-slim
 
-# Multi-stage build setup
-FROM --platform=$TARGETPLATFORM ${BASE_IMAGE}
+# Variables de entorno
+ENV DEBIAN_FRONTEND=noninteractive \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8 \
+    TZ=America/New_York
 
-# Copy architecture-specific binaries
-COPY --from=builder /build-output /app
+# Instalar dependencias del sistema necesarias para Chrome/Playwright
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git curl wget unzip locales \
+    libnss3 libxss1 libasound2 fonts-liberation \
+    libatk1.0-0 libatk-bridge2.0-0 libcups2 \
+    libdrm2 libgbm1 libgtk-3-0 \
+    libxcomposite1 libxrandr2 libxi6 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Configure locale and timezone
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install --no-install-recommends -y tzdata locales
-RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment
-RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-RUN echo "LANG=en_US.UTF-8" > /etc/locale.conf
-RUN locale-gen en_US.UTF-8
+# Configuración de locales
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen en_US.UTF-8
 
-# Install system dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    ca-certificates \
-    curl \
-    git \
-    python3-pip \
-    xorgxrdp \
-    xrdp \
-    tightvncserver \
-    xfonts-75dpi  \
-    xfonts-100dpi  \
-    xfonts-base \
-    xvfb \
-    wget \
-    screen \
-    sudo \
-    xfce4 \
-    xfce4-goodies \
-    dbus-x11 \
-    xfce4-terminal
+# Instalar dependencias Python
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Clean up
-RUN apt remove -y light-locker xscreensaver && \
-    apt autoremove -y && \
-    rm -rf /var/cache/apt /var/lib/apt/lists
+# Instalar librerías adicionales (solver y patchright)
+RUN pip install --no-cache-dir git+https://github.com/odell0111/turnstile_solver@main \
+    && pip install --no-cache-dir patchright \
+    && patchright install chrome
 
-# Copy entrypoint script
-COPY ./entrypoint.sh /usr/local/bin/
+# Copiar el código fuente
+COPY src /app/src
+
+# Copiar el entrypoint desde la raíz del repo (ajustado para Railway)
+COPY docker/services/solver/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Healthcheck (adjust as needed)
-#HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
-#    CMD netstat -an | grep $XRDP_PORT >/dev/null || exit 1
+# Definir directorio de trabajo
+WORKDIR /app
 
-# Set entrypoint
+# Exponer el puerto
+EXPOSE 8088
+
+# Usar entrypoint.sh para lanzar el solver
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
