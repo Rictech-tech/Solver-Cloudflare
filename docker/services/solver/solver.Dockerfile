@@ -5,7 +5,7 @@ FROM --platform=$BUILDPLATFORM ${BASE_IMAGE} AS builder
 FROM --platform=$TARGETPLATFORM ${BASE_IMAGE}
 
 # Copy architecture-specific binaries
-COPY --from=builder /build-output /app
+# COPY --from=builder /build-output /app
 
 # Configure locale and timezone
 RUN apt-get update && \
