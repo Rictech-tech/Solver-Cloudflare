@@ -252,8 +252,8 @@ async def run_server(
 
   proxy = Proxy(
     server="http://brd.superproxy.io:33335",
-    username="brd-customer-hl_8131b760-zone-datacenter_proxy1",
-    password="av5q6lqyu8ft"
+    username="brd-customer-hl_8131b760-zone-residential_proxy2",
+    password="srzvl9aab7nj"
   )
 
   solver = TurnstileSolver(
