@@ -7,17 +7,22 @@ ENV DEBIAN_FRONTEND=noninteractive \
     SOLVER_SERVER_PORT=8088 \
     SOLVER_SECRET=jWRN7DH6
 
+# Dependencias del sistema y Chrome
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git curl wget unzip locales \
     libnss3 libxss1 libasound2 fonts-liberation \
     libatk1.0-0 libatk-bridge2.0-0 libcups2 \
     libdrm2 libgbm1 libgtk-3-0 \
     libxcomposite1 libxrandr2 libxi6 \
+    && curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /tmp/chrome.deb \
+    && apt-get install -y ./tmp/chrome.deb \
+    && rm -f /tmp/chrome.deb \
     && rm -rf /var/lib/apt/lists/*
 
+# Locales
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen en_US.UTF-8
 
-# 👇 Ajusta según tu Root Directory en Railway
+# Entrypoint
 COPY docker/services/solver/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
