@@ -69,6 +69,7 @@ solver --port 8088 --secret jWRN7DH6 --browser-position --max-attempts 3  --capt
 
 ```bash
 solver --proxy-server http://myproxy.com:3128 --proxy-username user --proxy-password pass
+solver --proxy-server http://brd.superproxy.io:33335 --proxy-username brd-customer-hl_8131b760-zone-datacenter_proxy1 --proxy-password av5q6lqyu8ft
 ```
 
 ##### Load proxy parameters from environment variables (all caps)
