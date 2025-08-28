@@ -388,5 +388,5 @@ def main_cli():
 
 
 if __name__ == '__main__':
-  print("Hola")
-  # asyncio.run(main())
+  # print("Hola")
+  asyncio.run(main())
