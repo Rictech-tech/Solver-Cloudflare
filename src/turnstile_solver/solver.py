@@ -302,13 +302,19 @@ class TurnstileSolver:
     # ?
     # browser: Browser | None = await playwright.chromium.launch_persistent_context(no_viewport=True)
     browser: Browser | None = await playwright.chromium.launch(
-      executable_path=self.browser_executable_path,
-      channel=self.browser,
-      args=self.browser_args,
+      headless=True,
+      args=[
+          "--no-sandbox",
+          "--disable-dev-shm-usage",
+          "--disable-gpu",
+          "--disable-software-rasterizer"
+      ]
+      # executable_path=self.browser_executable_path,
+      # channel=self.browser,
+      # args=self.browser_args,
       # headless=self.headless,
-      headless=False,
-      proxy=proxy.dict() if proxy else None,
-      timeout=60000
+      # proxy=proxy.dict() if proxy else None,
+      # timeout=60000
     )
     return browser, playwright
 
