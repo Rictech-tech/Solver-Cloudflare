@@ -256,7 +256,7 @@ async def run_server(
     browser_position=browser_position,
     browser="chromium",
     headless=True,
-    browser_executable_path="/root/.cache/ms-playwright/chromium-1169/chrome-linux/chrome",
+    executable_path="/root/.cache/ms-playwright/chromium-1169/chrome-linux/chrome",
     # browser_executable_path="/opt/google/chrome/chrome",
     # browser_executable_path=browser_executable_path,
     # headless=headless,
