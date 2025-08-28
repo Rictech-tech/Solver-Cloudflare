@@ -305,7 +305,8 @@ class TurnstileSolver:
       executable_path=self.browser_executable_path,
       channel=self.browser,
       args=self.browser_args,
-      headless=self.headless,
+      # headless=self.headless,
+      headless=False,
       proxy=proxy.dict() if proxy else None,
       timeout=60000
     )
