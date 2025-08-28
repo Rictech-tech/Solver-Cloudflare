@@ -9,13 +9,14 @@ ENV DEBIAN_FRONTEND=noninteractive \
     SOLVER_SERVER_PORT=8088 \
     SOLVER_SECRET=jWRN7DH6
 
-# Dependencias del sistema
+# Dependencias del sistema necesarias para Chrome
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git curl wget unzip locales \
-    libnss3 libxss1 libasound2 fonts-liberation \
-    libatk1.0-0 libatk-bridge2.0-0 libcups2 \
-    libdrm2 libgbm1 libgtk-3-0 \
-    libxcomposite1 libxrandr2 libxi6 \
+    ca-certificates \
+    fonts-liberation \
+    libasound2 libatk-bridge2.0-0 libatk1.0-0 libcups2 \
+    libdrm2 libgbm1 libgtk-3-0 libnss3 libx11-xcb1 libxcomposite1 \
+    libxdamage1 libxrandr2 libxss1 libxtst6 xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
 # Configurar locale
@@ -30,18 +31,16 @@ COPY requirements.txt .
 # Instalar requirements
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Instalar solver desde repo
-RUN pip install --no-cache-dir "git+https://github.com/odell0111/turnstile_solver.git@main"
-
-# Instalar patchright + Chrome
-RUN pip install --no-cache-dir patchright \
+# Instalar solver y patchright + Chrome
+RUN pip install --no-cache-dir "git+https://github.com/odell0111/turnstile_solver.git@main" \
+    && pip install --no-cache-dir patchright \
     && patchright install chrome
 
 # Exponer puerto
 EXPOSE ${SOLVER_SERVER_PORT}
 
-# ENTRYPOINT y CMD en formato JSON correcto
-# ENTRYPOINT ["solver"]
-# CMD ["--browser","chrome","--port","8088","--secret","jWRN7DH6","--max-attempts","3","--captcha-timeout","30","--page-load-timeout","30"]
-# CMD [ "solver" ]
-CMD ["sh","-c","solver ... > /app/solver.log 2>&1"]
+# ENTRYPOINT directo
+ENTRYPOINT ["solver"]
+
+# CMD con logs limitados usando log-level (solo info crítica, warnings y errores)
+CMD [ "--browser", "chrome", "--port", "8088", "--secret", "jWRN7DH6", "--max-attempts", "3", "--captcha-timeout", "30", "--page-load-timeout", "30", "--log-level", "WARN"]
