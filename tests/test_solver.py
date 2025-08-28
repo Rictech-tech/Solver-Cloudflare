@@ -63,7 +63,7 @@ def solver(server: TurnstileSolverServer) -> TurnstileSolver:
 async def test_solve(solver: TurnstileSolver):
 
   # siteUrl, siteKey = "https://2captcha.com/demo/cloudflare-turnstile", "0x1AAAAAAAAkg0s2VIOD34y5"
-  siteUrl, siteKey = "https://spotifydown.com/", "0x4AAAAAAAByvC31sFG0MSlp"
+  siteUrl, siteKey = "https://conoce-aqui.sunarp.gob.pe/conoce-aqui/inicio/", "0x4AAAAAABkzY0RWK8hHlSYj"
 
   async with asyncio.TaskGroup() as tg:
     serverTask = tg.create_task(solver.server.run(debug=True), name="server_task")
