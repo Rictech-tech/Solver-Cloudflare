@@ -43,4 +43,5 @@ EXPOSE ${SOLVER_SERVER_PORT}
 # ENTRYPOINT y CMD en formato JSON correcto
 # ENTRYPOINT ["solver"]
 # CMD ["--browser","chrome","--port","8088","--secret","jWRN7DH6","--max-attempts","3","--captcha-timeout","30","--page-load-timeout","30"]
-CMD [ "solver" ]
+# CMD [ "solver" ]
+CMD ["sh","-c","solver ... > /app/solver.log 2>&1"]
